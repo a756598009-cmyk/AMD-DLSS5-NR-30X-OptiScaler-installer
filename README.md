@@ -3,9 +3,8 @@
 
 [**中文**](README.md) | [English](README_EN.md)
 
-夸克网盘整合包：
-链接：https://pan.quark.cn/s/8268c09da51c?pwd=JLXU
-提取码：JLXU
+国内用户安装器下载地址：链接：https://pan.quark.cn/s/8ddf4723f483?pwd=8Fdq
+提取码：8Fdq
 
 ## 📖 使用教程
 
