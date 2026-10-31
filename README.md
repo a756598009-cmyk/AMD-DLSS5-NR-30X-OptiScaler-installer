@@ -21,6 +21,7 @@ Select a game from the game library.
 Install OptiScaler DLSS5 by clicking the corresponding button.
 Enable 30× frame generation by selecting any one of the available options in the “30× Frame Generation” section.
 
+支持(D3D9/D3D11/D3D12/Vulkan/OpenGL)上古游戏也能开
 支持9000系，7000系，6000系，不同游戏自行测试，使用方法与之前一致。
 【此版本加入了4种 xess 30倍帧生成】可以去我主页看使用教程。RX 6000（RDNA2）： 增加了对RX 6000系列（RDNA2）显卡的支持 RDNA2显卡需要安装AMD HIP 7.2运行时才能正常工作，可以从AMD官网下载（https://www.amd.com/en/developer/resources/rocm-hub/hip-sdk.html)
 加入了FSR4.1.2,FSR4.1.3
