@@ -11,6 +11,8 @@
 ### 🔗 教程入口
 - 视频教程：[柠檬有多萌萌胧未可知 · 哔哩哔哩个人空间](https://space.bilibili.com/173069391?spm_id_from=333.1007.0.0)
 
+- 如果你喜欢自己注入也可以去下载OPT版本：https://github.com/a756598009-cmyk/AMD-DLSS5-NR-30X-OptiScaler
+
 📖 使用教程
 选择游戏：在游戏库中选择需要安装的游戏。
 安装 OptiScaler DLSS5：点击「安装 OptiScaler DLSS5」。
