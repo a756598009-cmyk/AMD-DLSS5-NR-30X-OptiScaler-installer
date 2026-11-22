@@ -1,0 +1,19 @@
+#version 450
+// ACO import probe B: LDS and a barrier, a 2D grid (workgroup IDs x and y), the grid size, the subgroup ID
+// (workgroup info SGPR), four push constants.
+#extension GL_KHR_shader_subgroup_basic : require
+layout(local_size_x = 64, local_size_y = 2) in;
+layout(set = 0, binding = 0) readonly buffer In { uint a[]; };
+layout(set = 0, binding = 1) writeonly buffer Out { uint o[]; };
+layout(push_constant) uniform P { uint mul; uint add; uint w; uint h; } pc;
+shared uint lds[128];
+void main() {
+    uint l = gl_LocalInvocationIndex;
+    uint x = gl_GlobalInvocationID.x, y = gl_GlobalInvocationID.y;
+    uint i = y * pc.w + x;
+    lds[l] = (x < pc.w && y < pc.h) ? a[i] : 0u;
+    barrier();
+    uint v = lds[127u - l] * pc.mul + pc.add;
+    v ^= (gl_WorkGroupID.x << 8) ^ (gl_WorkGroupID.y << 16) ^ (gl_NumWorkGroups.x << 24) ^ (gl_SubgroupID << 28);
+    if (x < pc.w && y < pc.h) o[i] = v;
+}

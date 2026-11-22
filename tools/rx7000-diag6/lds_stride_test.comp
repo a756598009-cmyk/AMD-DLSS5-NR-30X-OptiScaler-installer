@@ -1,0 +1,32 @@
+#version 460
+#extension GL_GOOGLE_include_directive : require
+#include "coopmm.glsl"
+#extension GL_KHR_shader_subgroup_basic : require
+// attn's LDS round trip at a row stride of NR_S f16 (released attn: 36 = 72 bytes; kit 6: 32 = 64 bytes): a 16x16 tile
+// into an FP16 accumulator, stored ColumnMajor to LDS, read back as A RowMajor (gives the tile transposed) and as B
+// ColumnMajor (gives the tile), each times the identity, stored RowMajor. The pad elements of each row are never
+// written, as in attn.
+layout(local_size_x = 32) in;
+layout(set = 0, binding = 0, std430) buffer ActE4M3 { NR_E4M3 act_e4m3[]; };
+shared NR_E4M3 lds_q[4 * 16 * NR_S];
+shared NR_E4M3 lds_id[256];
+void main() {
+    const uint sl = gl_SubgroupInvocationID, wg = gl_WorkGroupID.x;
+    for (uint i = sl; i < 256u; i += 32u) lds_id[i] = NR_E4M3((i / 16u) == (i % 16u) ? 1.0 : 0.0);
+    for (uint t = 0u; t < 4u; ++t) {
+        NR_FRAG_ACC16 q;
+        coopMatLoad(q, act_e4m3, wg * 1024u + t * 256u, 16u, gl_CooperativeMatrixLayoutRowMajor);
+        NR_STORE_ACC_COL(q, lds_q, t * 16u * uint(NR_S), uint(NR_S));
+    }
+    subgroupMemoryBarrierShared(); subgroupBarrier();
+    NR_FRAG_A ia; NR_LOAD_A(ia, lds_id, 0u, 16u);
+    NR_FRAG_B ib; NR_LOAD_B(ib, lds_id, 0u, 16u);
+    for (uint t = 0u; t < 4u; ++t) {
+        NR_FRAG_A a; NR_LOAD_A(a, lds_q, t * 16u * uint(NR_S), uint(NR_S));
+        NR_FRAG_B b; NR_LOAD_B(b, lds_q, t * 16u * uint(NR_S), uint(NR_S));
+        NR_FRAG_ACC x = NR_ACC_ZERO, y = NR_ACC_ZERO;
+        NR_MMA(x, a, ib); NR_MMA(y, ia, b);
+        NR_STORE_ACC(NR_FRAG_ACC16(x), act_e4m3, 16384u + wg * 1024u + t * 256u, 16u);
+        NR_STORE_ACC(NR_FRAG_ACC16(y), act_e4m3, 32768u + wg * 1024u + t * 256u, 16u);
+    }
+}

@@ -1,0 +1,92 @@
+--- a/menu/menu_common.cpp
++++ b/menu/menu_common.cpp
+@@ -32,6 +32,7 @@
+ #include <proxies/Streamline_Proxy.h>
+ 
+ #include <framegen/nvngx/Nvngx_FG.h>
++#include <misc/CustomProviders.h>
+ #include <framegen/dlssg/MfgUnlock.h>
+ #include <framegen/reprojection/Reprojection_Dx12.h>
+ 
+@@ -6515,6 +6516,14 @@
+ 
+     // clang-format on
+ 
++    // Custom DLSSG providers are discovered from OptiScaler\\custom\\<provider>\\dlssg.
++    const auto& customFgs = CustomProviders::Scan().dlssg;
++    auto constexpr fgNvngxCustomIndex = (uint32_t) FGNvngxReplacement::Custom;
++
++    for (uint32_t i = 0; i < customFgs.size(); i++)
++        nvngxOptions.push_back({ (FGNvngxReplacement) (fgNvngxCustomIndex + i), customFgs[i],
++                                 StrFmt("Custom DLSSG from custom\\%s\\dlssg", customFgs[i].c_str()) });
++
+     bool replaceFgOutputWithNvngx = false;
+     bool showNvngxFgDowndown = false;
+ 
+@@ -6560,6 +6569,48 @@
+     if (!config->FGNvngxReplacement.has_value())
+         config->FGNvngxReplacement = config->FGNvngxReplacement.value_or_default(); // need to have a value before combo
+ 
++    // The config stores Custom plus the selected folder name; the combo uses
++    // temporary consecutive enum values so each discovered provider is selectable.
++    auto isActiveCustomFg = [&config, &state](const std::string& name)
++    {
++        return config->FGNvngxReplacement.value_or_default() == FGNvngxReplacement::Custom &&
++               _stricmp(state.fgNvngxCustom.c_str(), name.c_str()) == 0;
++    };
++
++    auto nvngxCombo = [&](const char* label)
++    {
++        auto current = config->FGNvngxReplacement.value_or_default();
++
++        if (current == FGNvngxReplacement::Custom)
++        {
++            const auto it = std::ranges::find_if(customFgs, isActiveCustomFg);
++            current = it == customFgs.end()
++                          ? FGNvngxReplacement::None
++                          : (FGNvngxReplacement) (fgNvngxCustomIndex + (it - customFgs.begin()));
++        }
++
++        auto selected = current;
++        PopulateCombo(label, selected, nvngxOptions);
++
++        if (selected == current)
++            return;
++
++        if ((uint32_t) selected >= fgNvngxCustomIndex)
++        {
++            const auto customIndex = (uint32_t) selected - fgNvngxCustomIndex;
++            if (customIndex < customFgs.size())
++            {
++                state.fgNvngxCustom = customFgs[customIndex];
++                config->FGNvngxReplacement = FGNvngxReplacement::Custom;
++            }
++        }
++        else
++        {
++            state.fgNvngxCustom.clear();
++            config->FGNvngxReplacement = selected;
++        }
++    };
++
+     if (state.activeFgInput != FGInput::ForceXeLL)
+     {
+         SectionTitle("Frame Generation");
+@@ -6578,7 +6629,7 @@
+             if (replaceFgOutputWithNvngx)
+             {
+                 // Disable None?
+-                PopulateCombo("FG Nvngx", config->FGNvngxReplacement, nvngxOptions);
++                nvngxCombo("FG Nvngx");
+                 ShowTooltip("What backend to use instead of the real DLSSG");
+             }
+             else
+@@ -6591,7 +6642,7 @@
+             {
+                 ImGui::TableNextColumn();
+ 
+-                PopulateCombo("FG Nvngx Replacement", config->FGNvngxReplacement, nvngxOptions);
++                nvngxCombo("FG Nvngx Replacement");
+                 ShowTooltip("What backend to use instead of the real DLSSG");
+             }
+ 

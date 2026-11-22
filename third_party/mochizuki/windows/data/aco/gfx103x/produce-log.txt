@@ -1,0 +1,50 @@
+OK name=g_attn.spv key=20f05b4712ebae94 fixed=5 undecoded=0 vgpr=192 lds=12288 scratch=0 user=16 inlines=12 push=-1 grid=13 exec=126180 spilled=0 s=76.8
+OK name=g_decups.spv key=01b4be2dc59e5318 fixed=2 undecoded=0 vgpr=32 lds=0 scratch=0 user=8 inlines=7 push=-1 grid=-1 exec=1296 spilled=0 s=0.3
+OK name=g_ffwd3.spv key=7d30ec298a517eca fixed=7 undecoded=0 vgpr=160 lds=0 scratch=0 user=9 inlines=8 push=-1 grid=-1 exec=41456 spilled=0 s=3.0
+OK name=g_ffwd3w.spv key=66159f76fafaa588 fixed=7 undecoded=0 vgpr=160 lds=0 scratch=0 user=9 inlines=8 push=-1 grid=-1 exec=41900 spilled=0 s=3.1
+OK name=g_fswin128.spv key=ec7cd6ddc3b5c785 fixed=5 undecoded=0 vgpr=256 lds=32768 scratch=0 user=16 inlines=15 push=-1 grid=-1 exec=114588 spilled=0 s=7.6
+OK name=g_fswin256.spv key=b214c502a73cb1aa fixed=5 undecoded=0 vgpr=256 lds=65536 scratch=0 user=16 inlines=15 push=-1 grid=-1 exec=114576 spilled=0 s=8.0
+OK name=g_fswin32.spv key=d60f1bc831028e39 fixed=5 undecoded=0 vgpr=192 lds=8192 scratch=0 user=16 inlines=15 push=-1 grid=-1 exec=83736 spilled=0 s=7.1
+OK name=g_fswin32nh.spv key=27119a95abd5ae2a fixed=5 undecoded=0 vgpr=192 lds=8192 scratch=0 user=16 inlines=15 push=-1 grid=-1 exec=83668 spilled=0 s=5.5
+OK name=g_fswin64.spv key=b05033ffd2c76b7c fixed=5 undecoded=0 vgpr=256 lds=16384 scratch=0 user=16 inlines=15 push=-1 grid=-1 exec=114588 spilled=0 s=6.0
+OK name=g_fswindsp128.spv key=859c4f7a8d4d5fd9 fixed=8 undecoded=0 vgpr=256 lds=32768 scratch=0 user=10 inlines=8 push=1 grid=-1 exec=123688 spilled=0 s=6.7
+OK name=g_fswindsp256.spv key=868541c22e368daa fixed=8 undecoded=0 vgpr=256 lds=65536 scratch=0 user=10 inlines=8 push=1 grid=-1 exec=123692 spilled=0 s=7.4
+REJECT name=g_fswindsp32.spv vgpr=192 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+OK name=g_fswindsp32nh.spv key=60e2b09d5c1ac165 fixed=6 undecoded=0 vgpr=192 lds=8192 scratch=0 user=10 inlines=8 push=1 grid=-1 exec=89720 spilled=0 s=6.8
+OK name=g_fswindsp64.spv key=290e89afc483df54 fixed=8 undecoded=0 vgpr=256 lds=16384 scratch=0 user=10 inlines=8 push=1 grid=-1 exec=123688 spilled=0 s=6.7
+OK name=g_fswinfusedup128.spv key=bc4b0df630b194a5 fixed=18 undecoded=0 vgpr=256 lds=32768 scratch=0 user=10 inlines=8 push=1 grid=-1 exec=122828 spilled=0 s=6.8
+OK name=g_fswinfusedup256.spv key=ab7ff45baafed09d fixed=18 undecoded=0 vgpr=256 lds=65536 scratch=0 user=10 inlines=8 push=1 grid=-1 exec=122812 spilled=0 s=7.4
+OK name=g_fswinfusedup32.spv key=d3d6e4a28d20223c fixed=7 undecoded=0 vgpr=192 lds=8192 scratch=0 user=10 inlines=8 push=1 grid=-1 exec=99340 spilled=0 s=7.5
+OK name=g_fswinfusedup32nh.spv key=9aa966944a0c6982 fixed=7 undecoded=0 vgpr=192 lds=8192 scratch=0 user=10 inlines=8 push=1 grid=-1 exec=98936 spilled=0 s=7.9
+OK name=g_fswinfusedup64.spv key=33ff5ce448d4d188 fixed=18 undecoded=0 vgpr=256 lds=16384 scratch=0 user=10 inlines=8 push=1 grid=-1 exec=122764 spilled=0 s=7.7
+OK name=g_fswinimagepost32.spv key=fa3ee6adeb7e4ea6 fixed=2 undecoded=0 vgpr=192 lds=8192 scratch=0 user=13 inlines=8 push=1 grid=10 exec=85836 spilled=0 s=6.7
+OK name=g_fswinimagepost32_grade.spv key=cb26080a38ec2a4c fixed=2 undecoded=0 vgpr=192 lds=8192 scratch=0 user=13 inlines=8 push=1 grid=10 exec=87288 spilled=0 s=5.9
+REJECT name=g_fswinimagepreds32.spv vgpr=192 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+OK name=g_fswinimagepreds32nh.spv key=951239d0266d8c69 fixed=2 undecoded=0 vgpr=192 lds=8192 scratch=0 user=13 inlines=8 push=1 grid=10 exec=93536 spilled=0 s=7.2
+OK name=g_gemmnores.spv key=b73a3605bb05de86 fixed=1 undecoded=0 vgpr=128 lds=0 scratch=0 user=10 inlines=9 push=-1 grid=-1 exec=9608 spilled=0 s=0.4
+OK name=g_gemmpool.spv key=ba1d1d7ae2c888ff fixed=1 undecoded=0 vgpr=128 lds=0 scratch=0 user=12 inlines=11 push=-1 grid=-1 exec=9104 spilled=0 s=0.3
+OK name=g_gemmproj.spv key=609ebc8ee24fd61c fixed=6 undecoded=0 vgpr=80 lds=0 scratch=0 user=14 inlines=10 push=-1 grid=11 exec=5224 spilled=0 s=0.2
+OK name=g_gemmprojc.spv key=cdc841bea285d8a4 fixed=6 undecoded=0 vgpr=64 lds=0 scratch=0 user=14 inlines=10 push=-1 grid=11 exec=5756 spilled=0 s=0.2
+OK name=g_gemmprojt.spv key=a7229f911a2ae2ce fixed=6 undecoded=0 vgpr=80 lds=0 scratch=0 user=16 inlines=12 push=-1 grid=13 exec=6104 spilled=0 s=0.2
+OK name=g_gemmprojw.spv key=1afcc4965532bd6e fixed=6 undecoded=0 vgpr=128 lds=0 scratch=0 user=14 inlines=10 push=-1 grid=11 exec=8960 spilled=0 s=0.3
+OK name=g_gemmvact.spv key=1de1cdca8b2be1b9 fixed=6 undecoded=0 vgpr=128 lds=0 scratch=0 user=12 inlines=8 push=-1 grid=9 exec=18164 spilled=0 s=0.6
+REJECT name=g_gemmvnores.spv vgpr=128 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+REJECT name=g_gemmvproj.spv vgpr=128 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+REJECT name=g_gemmvqkv.spv vgpr=128 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+OK name=g_gemmvqkvnorm.spv key=6dd47c465b78f562 fixed=6 undecoded=0 vgpr=128 lds=0 scratch=0 user=13 inlines=9 push=-1 grid=10 exec=23052 spilled=0 s=0.7
+OK name=g_gemmvqkvnorms.spv key=aa0e4cecfd9d1786 fixed=6 undecoded=0 vgpr=128 lds=0 scratch=0 user=13 inlines=9 push=-1 grid=10 exec=16088 spilled=0 s=0.5
+OK name=g_gemmvqkvs.spv key=2cbf2d7b11475896 fixed=1 undecoded=0 vgpr=80 lds=0 scratch=0 user=7 inlines=6 push=-1 grid=-1 exec=3520 spilled=0 s=0.2
+OK name=g_noisefield.spv key=a60288d26dfae7d2 fixed=1 undecoded=0 vgpr=32 lds=0 scratch=0 user=6 inlines=5 push=-1 grid=-1 exec=552 spilled=0 s=0.1
+REJECT name=g_repack.spv vgpr=32 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+REJECT name=g_upsview.spv vgpr=48 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+OK name=g_vitattn.spv key=4e6de411e1c89909 fixed=3 undecoded=0 vgpr=96 lds=0 scratch=0 user=6 inlines=5 push=-1 grid=-1 exec=73888 spilled=0 s=3.9
+REJECT name=temporal_post_fp32.spv vgpr=192 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+REJECT name=temporal_post_fp32_grade.spv vgpr=192 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+REJECT name=temporal_post_fp32h16.spv vgpr=192 scratch=0 spilled=0 why="a sampled image before another binding (descriptor sizes differ from the driver)"
+REJECT name=temporal_post_fp32h16_grade.spv vgpr=192 scratch=0 spilled=0 why="a sampled image before another binding (descriptor sizes differ from the driver)"
+REJECT name=temporal_post_fp32hp.spv vgpr=192 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+REJECT name=temporal_post_fp32hp_grade.spv vgpr=192 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+REJECT name=temporal_pre_fp32.spv vgpr=192 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+REJECT name=temporal_pre_fp32nh.spv vgpr=192 scratch=0 spilled=0 why="a sampled image before another binding (descriptor sizes differ from the driver)"
+REJECT name=temporal_pre_fp32nhhp.spv vgpr=192 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+33 of 49 records for navi21 from shaders-rdna2

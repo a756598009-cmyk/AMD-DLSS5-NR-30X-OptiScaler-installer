@@ -1,0 +1,36 @@
+#version 460
+// Multi-pass anti-halo (Controls::anti_halo), after the last pass and before the
+// transfer pass. Every pass sharpens the one before, so a thin edge (a wire
+// against the sky) gains a bright or dark rim that grows each pass. The
+// answer's luminance is held inside the range the FIRST pass's answer has
+// around the pixel (3x3, a small margin either side): detail inside an edge
+// stays, light past what the first pass made beside it goes. Scaled as one
+// factor on the triple, so the hue is kept. Both images are the network's sRGB
+// proxy, compared in linear light.
+layout(local_size_x = 8, local_size_y = 8) in;
+layout(set = 0, binding = 0, rgba32f) uniform image2D answer;   // surf0, written in place
+layout(set = 0, binding = 1, rgba32f) uniform image2D first;    // the first pass's answer
+layout(push_constant) uniform Push { uint width, height; float margin; } pc;
+float srgb_decode(float x) { return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4); }
+float srgb_encode(float x) { return x <= 0.0031308 ? 12.92 * x : 1.055 * pow(x, 1.0 / 2.4) - 0.055; }
+vec3 decode3(vec3 c) { c = clamp(c, vec3(0.0), vec3(1.0)); return vec3(srgb_decode(c.r), srgb_decode(c.g), srgb_decode(c.b)); }
+vec3 encode3(vec3 c) { c = clamp(c, vec3(0.0), vec3(1.0)); return vec3(srgb_encode(c.r), srgb_encode(c.g), srgb_encode(c.b)); }
+float luma(vec3 c) { return dot(c, vec3(0.2126, 0.7152, 0.0722)); }
+void main() {
+    const ivec2 xy = ivec2(gl_GlobalInvocationID.xy);
+    if (xy.x >= int(pc.width) || xy.y >= int(pc.height)) return;
+    const ivec2 hi = ivec2(pc.width, pc.height) - 1;
+    float lo_l = 1e9, hi_l = 0.0;
+    for (int dy = -1; dy <= 1; ++dy)
+        for (int dx = -1; dx <= 1; ++dx) {
+            const float l = luma(decode3(imageLoad(first, clamp(xy + ivec2(dx, dy), ivec2(0), hi)).rgb));
+            lo_l = min(lo_l, l);
+            hi_l = max(hi_l, l);
+        }
+    const vec4 a = imageLoad(answer, xy);
+    const vec3 c = decode3(a.rgb);
+    const float l = luma(c);
+    const float held = clamp(l, lo_l * (1.0 - pc.margin), hi_l * (1.0 + pc.margin) + 1.0 / 4096.0);
+    if (held == l || l <= 0.0) return;
+    imageStore(answer, xy, vec4(encode3(c * (held / l)), a.a));
+}

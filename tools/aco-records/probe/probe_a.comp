@@ -1,0 +1,10 @@
+#version 450
+// ACO import probe A: two buffers, three push constants (inlined into SGPRs by RADV), the workgroup ID.
+layout(local_size_x = 64) in;
+layout(set = 0, binding = 0) readonly buffer In { uint a[]; };
+layout(set = 0, binding = 1) writeonly buffer Out { uint o[]; };
+layout(push_constant) uniform P { uint mul; uint add; uint n; } pc;
+void main() {
+    uint i = gl_GlobalInvocationID.x;
+    if (i < pc.n) o[i] = a[i] * pc.mul + pc.add + (gl_WorkGroupID.x << 20);
+}

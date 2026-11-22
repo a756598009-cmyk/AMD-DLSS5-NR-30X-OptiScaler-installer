@@ -1,0 +1,117 @@
+{
+    "fingerprint":  "qHtI4kUR0Dxw/8birNTRB6xvVqyX1/c6X2jGxur5WqM=",
+    "outputs":  [
+                    {
+                        "hash":  "385B33B8EDBB1678FFB1A9689EFEE5B4F16F73197F4B1F8DAD9D4E68E0F94D5C",
+                        "name":  "ffx_opticalflow_compute_luminance_pyramid_pass_permutations.h"
+                    },
+                    {
+                        "hash":  "E37EC910D44CCE92A661FB3C935E82E162A43189019FB84D272E3DCF1B7F90FC",
+                        "name":  "ffx_opticalflow_compute_luminance_pyramid_pass_wave64_permutations.h"
+                    },
+                    {
+                        "hash":  "4D644B04E4F4484731333A0977D61DAACF53844963FF7180AC337631A90947FD",
+                        "name":  "ffx_opticalflow_compute_luminance_pyramid_pass_16bit_permutations.h"
+                    },
+                    {
+                        "hash":  "827AD5B728EFDB2F77045DDE60DDD0EAA66D94AF4659D96E82C60FD0F56BB5FF",
+                        "name":  "ffx_opticalflow_compute_luminance_pyramid_pass_wave64_16bit_permutations.h"
+                    },
+                    {
+                        "hash":  "D2803E81EEAB7C3D11EEDB3808CF11E4978769E4E5AE1060248CCC55307D1F1F",
+                        "name":  "ffx_opticalflow_compute_optical_flow_advanced_pass_v5_permutations.h"
+                    },
+                    {
+                        "hash":  "FCDEB2DDE97034D6F0F75F222D91BCABA1EE227D0628A996D530D21695C26D00",
+                        "name":  "ffx_opticalflow_compute_optical_flow_advanced_pass_v5_wave64_permutations.h"
+                    },
+                    {
+                        "hash":  "D5AA48090B8BDA317E4CEBD304140B32ABE56E911958D184A604D250374A3E56",
+                        "name":  "ffx_opticalflow_compute_optical_flow_advanced_pass_v5_16bit_permutations.h"
+                    },
+                    {
+                        "hash":  "2315F7469BEBEFEE5F1F50FFF42E753D482DBD05A44D1062E29E5183CDDD7BB0",
+                        "name":  "ffx_opticalflow_compute_optical_flow_advanced_pass_v5_wave64_16bit_permutations.h"
+                    },
+                    {
+                        "hash":  "648A4BED932B4CAE504398EF2D0D8E4F874698A29288534E76337025134D2F9F",
+                        "name":  "ffx_opticalflow_compute_scd_divergence_pass_permutations.h"
+                    },
+                    {
+                        "hash":  "5C0DB3206564DA3CBAF253BCE6387F12918044AA1A97670D27C091A88F79163E",
+                        "name":  "ffx_opticalflow_compute_scd_divergence_pass_wave64_permutations.h"
+                    },
+                    {
+                        "hash":  "0515279D08F6D002F41F53B7516D87DEE9898524FB8119D3FEA96F7662D0BD5F",
+                        "name":  "ffx_opticalflow_compute_scd_divergence_pass_16bit_permutations.h"
+                    },
+                    {
+                        "hash":  "CB46D20721A7C49C9E247173D292D7B2E05B3682FD15007E243F2FDC1C620691",
+                        "name":  "ffx_opticalflow_compute_scd_divergence_pass_wave64_16bit_permutations.h"
+                    },
+                    {
+                        "hash":  "D4C6B72DEE977442217BF07D390F13765FCA0961D228BD11313E3B8DF7557218",
+                        "name":  "ffx_opticalflow_filter_optical_flow_pass_v5_permutations.h"
+                    },
+                    {
+                        "hash":  "E1ADD067286D86DD4BBD8D5CD52B6AE01498D3472C6C6D8628EF7496D85BBD56",
+                        "name":  "ffx_opticalflow_filter_optical_flow_pass_v5_wave64_permutations.h"
+                    },
+                    {
+                        "hash":  "7151D8B4C5B2324DF2FD47A37D91F903CF0A78282E5027A04BD47E513568051F",
+                        "name":  "ffx_opticalflow_filter_optical_flow_pass_v5_16bit_permutations.h"
+                    },
+                    {
+                        "hash":  "7544AEE1ED5FEBD190080824C66A1B15A3C27C0DEC4AD165F47371B2D123A64B",
+                        "name":  "ffx_opticalflow_filter_optical_flow_pass_v5_wave64_16bit_permutations.h"
+                    },
+                    {
+                        "hash":  "D9C4431070241813A545F4BDE3C893D42DE0B8FA60648B8E69116A8C2ABAC0BC",
+                        "name":  "ffx_opticalflow_generate_scd_histogram_pass_permutations.h"
+                    },
+                    {
+                        "hash":  "17824FFDABBB5731C96695B8DA9261E89ECA1275303A70177EF628E5CCF9E3B0",
+                        "name":  "ffx_opticalflow_generate_scd_histogram_pass_wave64_permutations.h"
+                    },
+                    {
+                        "hash":  "7FBD58FD11A5018B050A52EC7D07F17BCB87F0D66AA9109BA8A39C315582D9C1",
+                        "name":  "ffx_opticalflow_generate_scd_histogram_pass_16bit_permutations.h"
+                    },
+                    {
+                        "hash":  "32BDFEC4F5964F01388B3EFB2A6C00F025E642ECB21AFF9A6F22032C0B3CDF1C",
+                        "name":  "ffx_opticalflow_generate_scd_histogram_pass_wave64_16bit_permutations.h"
+                    },
+                    {
+                        "hash":  "C4F502B530E39413B3407EE60F6E3D8FA74A4F770CDB5439A3D89E46AE14AFD6",
+                        "name":  "ffx_opticalflow_prepare_luma_pass_permutations.h"
+                    },
+                    {
+                        "hash":  "0FD1F64A6BBFE489B1125DDC072AAEEF3434D555FB7D9C6E062340E1FE5DA777",
+                        "name":  "ffx_opticalflow_prepare_luma_pass_wave64_permutations.h"
+                    },
+                    {
+                        "hash":  "A3649D6D24F5BC75FF1279AD0640E01D5CC184CF357DE63ED35FD68F7EECB2AB",
+                        "name":  "ffx_opticalflow_prepare_luma_pass_16bit_permutations.h"
+                    },
+                    {
+                        "hash":  "B6FF435910FC553675880A730CF63A0D8C49A71B5BABFC496A4A2EEA4A9750AD",
+                        "name":  "ffx_opticalflow_prepare_luma_pass_wave64_16bit_permutations.h"
+                    },
+                    {
+                        "hash":  "33F95F3561464A2067C0C34F200D548981D8C52F58ACCDE224C309353DA16712",
+                        "name":  "ffx_opticalflow_scale_optical_flow_advanced_pass_v5_permutations.h"
+                    },
+                    {
+                        "hash":  "499D9B9057467544ADB7E7F79C0E087AA4B950DCC5584DC324D442F70770DF7E",
+                        "name":  "ffx_opticalflow_scale_optical_flow_advanced_pass_v5_wave64_permutations.h"
+                    },
+                    {
+                        "hash":  "844CBBCDBEE792A57429E144D326C1370C0B69177F97506256601F83C9B7FE76",
+                        "name":  "ffx_opticalflow_scale_optical_flow_advanced_pass_v5_16bit_permutations.h"
+                    },
+                    {
+                        "hash":  "3DA48CC2F99CB2AB1C6D43DD18C8B2AA9A5ADF8EFE3E434956BCE89CDD469391",
+                        "name":  "ffx_opticalflow_scale_optical_flow_advanced_pass_v5_wave64_16bit_permutations.h"
+                    }
+                ]
+}

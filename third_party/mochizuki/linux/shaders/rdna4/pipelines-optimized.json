@@ -1,0 +1,228 @@
+{
+ "about": [
+  "CC_SILVER_AARDWOLD_OPTIMIZED, the faster network of the 310.8 model (build_network.py <arch> --optimized; its own",
+  "weights): every pipeline of pipelines.json, \"change\" adds defines to the pipeline of that name, \"new\" builds extra",
+  "pipelines from a base pipeline of pipelines.json. With its int4 layers on: pipelines-int4.json.",
+  "NR_SACT=1: ReLU as the Swin MLP activation (every fswin_t pipeline but the pre block's), with MLP weights fitted for",
+  "it. NR_FIXP: the window attention of the decoder's layers 66, 67 and 70 is one fixed 64x64 probability table a layer",
+  "(no QK^T, no softmax); NR_VOMERGE: the V and output projections of a one-head layer as one matrix (66, 67, 70 with",
+  "NR_FIXP, 68 and 69 with their own softmax). fswin32d / fswin32nhd and fswin32v / fswin32nhv: layer 67 and layers",
+  "68, 69 on their own pipelines (the encoder's layers of the same kernels keep the full attention); \"routes\" names",
+  "the blocks (block-routes.txt for the host). NR_CONSTH: the C=512 attention heads the host proves constant",
+  "(const-heads.txt). fixed-attention.txt lists the NR_FIXP pipelines (the host writes their tables). The weights:",
+  "CC_SILVER_AARDWOLD_OPTIMIZED.bin, made at install from the model (linux/data/optimized). Temporal variants: pipelines.json."
+ ],
+ "change": {
+  "attn": {
+   "add": [
+    "NR_CONSTH=1"
+   ]
+  },
+  "fswin128": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswin256": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswin32": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswin32nh": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswin64": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinds128": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinds256": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinds32": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinds64": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswindsp128": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswindsp256": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswindsp32": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswindsp32nh": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswindsp64": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinfusedup128": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinfusedup256": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinfusedup32": {
+   "add": [
+    "NR_SACT=1",
+    "NR_FIXP=1",
+    "NR_VOMERGE=1"
+   ]
+  },
+  "fswinfusedup32nh": {
+   "add": [
+    "NR_SACT=1",
+    "NR_FIXP=1",
+    "NR_VOMERGE=1"
+   ]
+  },
+  "fswinfusedup64": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinimagepost32": {
+   "add": [
+    "NR_SACT=1",
+    "NR_FIXP=1",
+    "NR_VOMERGE=1"
+   ]
+  },
+  "fswinp128": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinp256": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinp64": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinpds128": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinpds256": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinpds64": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinpup128": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinpup256": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinpup64": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  }
+ },
+ "new": {
+  "fswin32d": {
+   "base": "fswin32",
+   "add": [
+    "NR_SACT=1",
+    "NR_FIXP=1",
+    "NR_VOMERGE=1"
+   ]
+  },
+  "fswin32nhd": {
+   "base": "fswin32nh",
+   "add": [
+    "NR_SACT=1",
+    "NR_FIXP=1",
+    "NR_VOMERGE=1"
+   ]
+  },
+  "fswin32v": {
+   "base": "fswin32",
+   "add": [
+    "NR_SACT=1",
+    "NR_VOMERGE=1"
+   ]
+  },
+  "fswin32nhv": {
+   "base": "fswin32nh",
+   "add": [
+    "NR_SACT=1",
+    "NR_VOMERGE=1"
+   ]
+  }
+ },
+ "routes": [
+  {
+   "suffix": "d",
+   "kernels": [
+    "fswin32",
+    "fswin32nh"
+   ],
+   "blocks": [
+    67
+   ]
+  },
+  {
+   "suffix": "v",
+   "kernels": [
+    "fswin32",
+    "fswin32nh"
+   ],
+   "blocks": [
+    68,
+    69
+   ]
+  }
+ ]
+}

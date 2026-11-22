@@ -1,0 +1,409 @@
+{
+ "about": [
+  "CC_SILVER_AARDWOLD_OPTIMIZED, Optimized layers: Performance (build_network.py <arch> --performance, host built with NR_INT4=1):",
+  "pipelines-int4.json's network (Balanced, the same int4 layers and tables) with fixed attention (NR_FIXP, one fitted",
+  "64x64 probability table a layer) on the one-head C=32 layers of the pre block (block 0) and the encoder's blocks 1, 3",
+  "and 4; block 2 keeps its real attention on fswin32e / fswin32nhe (\"routes\"). Those layers' FP8 weights are fitted for",
+  "it: the \"performance/\" entries of CC_SILVER_AARDWOLD_OPTIMIZED.bin. pipelines-ultra.json adds more int4 layers. Format",
+  "as pipelines-int4.json."
+ ],
+ "change": {
+  "attn": {
+   "add": [
+    "NR_CONSTH=1"
+   ]
+  },
+  "fswin128": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswin256": {
+   "add": [
+    "NR_SWI4=1",
+    "NR_I4=1",
+    "NR_EXPAND_GROUP=2",
+    "NR_SWI4_MASKQ=1",
+    "NR_SACT=1",
+    "NR_SWI4_ROT=8"
+   ],
+   "remove": [
+    "NR_EXPAND_GROUP=4"
+   ]
+  },
+  "fswin32": {
+   "add": [
+    "NR_SACT=1",
+    "NR_FIXP=1"
+   ]
+  },
+  "fswin32nh": {
+   "add": [
+    "NR_SACT=1",
+    "NR_FIXP=1"
+   ]
+  },
+  "fswin64": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinds128": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinds256": {
+   "add": [
+    "NR_SWI4=1",
+    "NR_I4=1",
+    "NR_EXPAND_GROUP=2",
+    "NR_SWI4_MASKQ=1",
+    "NR_SACT=1",
+    "NR_SWI4_ROT=8"
+   ],
+   "remove": [
+    "NR_EXPAND_GROUP=4"
+   ]
+  },
+  "fswinds32": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinds64": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswindsp128": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswindsp256": {
+   "add": [
+    "NR_SWI4=1",
+    "NR_I4=1",
+    "NR_EXPAND_GROUP=2",
+    "NR_SWI4_MASKQ=1",
+    "NR_SACT=1",
+    "NR_SWI4_ROT=8"
+   ],
+   "remove": [
+    "NR_EXPAND_GROUP=4"
+   ]
+  },
+  "fswindsp32": {
+   "add": [
+    "NR_SACT=1",
+    "NR_FIXP=1"
+   ]
+  },
+  "fswindsp32nh": {
+   "add": [
+    "NR_SACT=1",
+    "NR_FIXP=1"
+   ]
+  },
+  "fswindsp64": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinfusedup128": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinfusedup256": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinfusedup32": {
+   "add": [
+    "NR_SACT=1",
+    "NR_FIXP=1",
+    "NR_VOMERGE=1"
+   ]
+  },
+  "fswinfusedup32nh": {
+   "add": [
+    "NR_SACT=1",
+    "NR_FIXP=1",
+    "NR_VOMERGE=1"
+   ]
+  },
+  "fswinfusedup64": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinimagepost32": {
+   "add": [
+    "NR_SACT=1",
+    "NR_FIXP=1",
+    "NR_VOMERGE=1"
+   ]
+  },
+  "fswinp128": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinp256": {
+   "add": [
+    "NR_SWI4=1",
+    "NR_I4=1",
+    "NR_EXPAND_GROUP=2",
+    "NR_SWI4_MASKQ=1",
+    "NR_SACT=1",
+    "NR_SWI4_ROT=8"
+   ],
+   "remove": [
+    "NR_EXPAND_GROUP=4"
+   ]
+  },
+  "fswinp64": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinpds128": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinpds256": {
+   "add": [
+    "NR_SWI4=1",
+    "NR_I4=1",
+    "NR_EXPAND_GROUP=2",
+    "NR_SWI4_MASKQ=1",
+    "NR_SACT=1",
+    "NR_SWI4_ROT=8"
+   ],
+   "remove": [
+    "NR_EXPAND_GROUP=4"
+   ]
+  },
+  "fswinpds64": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinpup128": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinpup256": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswinpup64": {
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "gemmprojc": {
+   "add": [
+    "NR_KCONST=512"
+   ]
+  },
+  "fswinimagepreds32": {
+   "add": [
+    "NR_FIXP=1"
+   ]
+  },
+  "fswinimagepreds32nh": {
+   "add": [
+    "NR_FIXP=1"
+   ]
+  }
+ },
+ "new": {
+  "gemmvact4": {
+   "base": "gemmvact",
+   "add": [
+    "NR_I4_OUT=1",
+    "NR_SWAP_AB=1"
+   ]
+  },
+  "gemmvact4c": {
+   "base": "gemmvact",
+   "add": [
+    "NR_SWAP_AB=1",
+    "NR_I4=1",
+    "NR_I4_OUT=1",
+    "NR_I4_NREC=16"
+   ]
+  },
+  "gemmproj4": {
+   "base": "gemmproj",
+   "add": [
+    "NR_I4=1"
+   ]
+  },
+  "gemmprojw4": {
+   "base": "gemmprojw",
+   "add": [
+    "NR_I4=1"
+   ]
+  },
+  "gemmproj4s": {
+   "base": "gemmproj",
+   "add": [
+    "NR_SWAP_AB=1",
+    "NR_I4=1",
+    "NR_I4_SIDE=1",
+    "NR_I4_PD=4",
+    "NR_I4_NREC=56"
+   ]
+  },
+  "gemmprojw4s": {
+   "base": "gemmprojw",
+   "add": [
+    "NR_SWAP_AB=1",
+    "NR_I4=1",
+    "NR_I4_SIDE=1"
+   ]
+  },
+  "gemmprojs": {
+   "base": "gemmproj",
+   "add": [
+    "NR_SWAP_AB=1",
+    "NR_I4_SIDE=1"
+   ]
+  },
+  "gemmprojws": {
+   "base": "gemmprojw",
+   "add": [
+    "NR_SWAP_AB=1",
+    "NR_I4_SIDE=1"
+   ]
+  },
+  "gemmvqkvnorms4": {
+   "base": "gemmvqkvnorms",
+   "add": [
+    "NR_I4=1",
+    "NR_I4_PD=4",
+    "NR_I4_NREC=16"
+   ]
+  },
+  "gemmvqkvnorm4": {
+   "base": "gemmvqkvnorm",
+   "add": [
+    "NR_I4=1"
+   ]
+  },
+  "gemmprojcs": {
+   "base": "gemmprojc",
+   "add": [
+    "NR_I4_SIDE=1",
+    "NR_KCONST=512"
+   ]
+  },
+  "attn4": {
+   "base": "attn",
+   "add": [
+    "NR_CONSTH=1",
+    "NR_ATTN_I4=1",
+    "NR_I4=1",
+    "NR_A4_NREC=8"
+   ]
+  },
+  "fswin32d": {
+   "base": "fswin32",
+   "add": [
+    "NR_SACT=1",
+    "NR_FIXP=1",
+    "NR_VOMERGE=1"
+   ]
+  },
+  "fswin32nhd": {
+   "base": "fswin32nh",
+   "add": [
+    "NR_SACT=1",
+    "NR_FIXP=1",
+    "NR_VOMERGE=1"
+   ]
+  },
+  "fswin32v": {
+   "base": "fswin32",
+   "add": [
+    "NR_SACT=1",
+    "NR_VOMERGE=1"
+   ]
+  },
+  "fswin32nhv": {
+   "base": "fswin32nh",
+   "add": [
+    "NR_SACT=1",
+    "NR_VOMERGE=1"
+   ]
+  },
+  "fswin32e": {
+   "base": "fswin32",
+   "add": [
+    "NR_SACT=1"
+   ]
+  },
+  "fswin32nhe": {
+   "base": "fswin32nh",
+   "add": [
+    "NR_SACT=1"
+   ]
+  }
+ },
+ "iu4": [
+  "attn4",
+  "fswin256",
+  "fswinds256",
+  "fswindsp256",
+  "fswinp256",
+  "fswinpds256",
+  "gemmproj4",
+  "gemmproj4s",
+  "gemmprojw4",
+  "gemmprojw4s",
+  "gemmvact4c",
+  "gemmvqkvnorm4",
+  "gemmvqkvnorms4"
+ ],
+ "routes": [
+  {
+   "suffix": "d",
+   "kernels": [
+    "fswin32",
+    "fswin32nh"
+   ],
+   "blocks": [
+    67
+   ]
+  },
+  {
+   "suffix": "v",
+   "kernels": [
+    "fswin32",
+    "fswin32nh"
+   ],
+   "blocks": [
+    68,
+    69
+   ]
+  },
+  {
+   "suffix": "e",
+   "kernels": [
+    "fswin32",
+    "fswin32nh"
+   ],
+   "blocks": [
+    2
+   ]
+  }
+ ]
+}

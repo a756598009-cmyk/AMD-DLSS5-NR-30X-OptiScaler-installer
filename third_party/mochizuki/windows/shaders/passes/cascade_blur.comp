@@ -1,0 +1,37 @@
+#version 460
+// Multi-pass, step 2 of 3: a blur of the log ratio along one axis; run
+// twice (dir 0 then 1) for the separable low-pass. The mean over a window of
+// `radius` on each side is the local tone the next pass must not inherit.
+// Edge-aware: each tap is weighted by how close the first pass's input is, in
+// log luminance, to the centre's. A plain box spread what the network did on
+// a thin dark wire over the sky beside it, and the subtraction in
+// cascade_feed then left a band `radius` wide around it, deeper every pass.
+layout(local_size_x = 8, local_size_y = 8) in;
+layout(set = 0, binding = 0, r32f) uniform image2D src;
+layout(set = 0, binding = 1, r32f) uniform image2D dst;
+layout(set = 0, binding = 2) uniform sampler2D shown;           // shown_keep: the first pass's input
+layout(push_constant) uniform Push { uint width, height; int radius; uint dir; } pc;
+float srgb_decode(float x) { return x <= 0.04045 ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4); }
+float guide(ivec2 p) {
+    const vec3 c = clamp(texelFetch(shown, p, 0).rgb, vec3(0.0), vec3(1.0));
+    const float l = dot(vec3(srgb_decode(c.r), srgb_decode(c.g), srgb_decode(c.b)), vec3(0.2126, 0.7152, 0.0722));
+    return log(l + 1.0 / 512.0);
+}
+// About a third of a stop apart weighs e^-1: the sky beside a wire, many stops away, weighs nothing.
+const float kInvSigma2 = 1.0 / (0.25 * 0.25);
+void main() {
+    const ivec2 xy = ivec2(gl_GlobalInvocationID.xy);
+    if (xy.x >= int(pc.width) || xy.y >= int(pc.height)) return;
+    const ivec2 step_ = pc.dir == 0u ? ivec2(1, 0) : ivec2(0, 1);
+    const ivec2 hi = ivec2(pc.width, pc.height) - 1;
+    const float g = guide(xy);
+    float sum = 0.0, weight = 0.0;
+    for (int i = -pc.radius; i <= pc.radius; ++i) {
+        const ivec2 p = clamp(xy + i * step_, ivec2(0), hi);
+        const float d = guide(p) - g;
+        const float w = exp(-d * d * kInvSigma2);
+        sum += w * imageLoad(src, p).r;
+        weight += w;
+    }
+    imageStore(dst, xy, vec4(sum / weight, 0.0, 0.0, 0.0));
+}

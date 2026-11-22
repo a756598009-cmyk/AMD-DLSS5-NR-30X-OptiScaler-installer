@@ -1,0 +1,40 @@
+#version 460
+#extension GL_GOOGLE_include_directive : require
+#include "coopmm.glsl"
+#extension GL_KHR_shader_subgroup_basic : require
+// The V^T fragment two ways: the released ColumnMajor A load from the arena, and kit 6's LDS staging (the same
+// statements as vit_attn_vt_chunk.glsl under NR_VT_STAGE), each times the identity, stored RowMajor.
+layout(local_size_x = 32) in;
+layout(set = 0, binding = 0, std430) buffer ActE4M3 { NR_E4M3 act_e4m3[]; };
+layout(set = 0, binding = 2, std430) buffer ActE4M3x4 { fe4m3vec4 act_x4[]; };
+shared NR_E4M3 lds_vt[512];
+shared NR_E4M3 lds_id[256];
+void main() {
+    const uint sl = gl_SubgroupInvocationID, wave = 0u, kb = 0u, X3 = 64u;
+    const uint vcb = gl_WorkGroupID.x * 16u * X3 + 512u;   // tiles 2 and 3 of this 16-token block
+    for (uint i = sl; i < 256u; i += 32u) lds_id[i] = NR_E4M3((i / 16u) == (i % 16u) ? 1.0 : 0.0);
+    subgroupMemoryBarrierShared(); subgroupBarrier();
+    NR_FRAG_B ib; NR_LOAD_B(ib, lds_id, 0u, 16u);
+    NR_FRAG_A va[2], vf[2];
+    for (uint n = 0u; n < 2u; ++n) NR_LOAD_A_COL(va[n], act_e4m3, vcb + kb * X3 + n * 256u, 16u);
+    {
+        const uint vn = sl >> 4u, vt = sl & 15u, vtb = wave * 512u + vn * 256u;
+        const uint v4 = (vcb + kb * X3 + vn * 256u + vt * 16u) >> 2;
+        const fe4m3vec4 r0 = act_x4[v4], r1 = act_x4[v4 + 1u], r2 = act_x4[v4 + 2u], r3 = act_x4[v4 + 3u];
+        subgroupBarrier();
+        for (uint v = 0u; v < 4u; ++v) {
+            lds_vt[vtb + v * 16u + vt] = r0[v];        lds_vt[vtb + (v + 4u) * 16u + vt] = r1[v];
+            lds_vt[vtb + (v + 8u) * 16u + vt] = r2[v]; lds_vt[vtb + (v + 12u) * 16u + vt] = r3[v];
+        }
+        subgroupMemoryBarrierShared();
+        subgroupBarrier();
+        for (uint n = 0u; n < 2u; ++n) NR_LOAD_A(vf[n], lds_vt, wave * 512u + n * 256u, 16u);
+    }
+    const uint ob = 16384u + gl_WorkGroupID.x * 512u;
+    for (uint n = 0u; n < 2u; ++n) {
+        NR_FRAG_ACC a = NR_ACC_ZERO, b = NR_ACC_ZERO;
+        NR_MMA(a, va[n], ib); NR_MMA(b, vf[n], ib);
+        NR_STORE_ACC(NR_FRAG_ACC16(a), act_e4m3, ob + n * 256u, 16u);
+        NR_STORE_ACC(NR_FRAG_ACC16(b), act_e4m3, ob + 16384u + n * 256u, 16u);
+    }
+}

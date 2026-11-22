@@ -1,0 +1,163 @@
+diff --git a/src/amd/compiler/aco_assembler.cpp b/src/amd/compiler/aco_assembler.cpp
+index e5c1d5e8..ed60d233 100644
+--- a/src/amd/compiler/aco_assembler.cpp
++++ b/src/amd/compiler/aco_assembler.cpp
+@@ -1,3 +1,5 @@
++#include <cstdlib>
++#include <cstdio>
+ /*
+  * Copyright © 2018 Valve Corporation
+  *
+@@ -1205,9 +1207,29 @@ emit_sdwa_instruction(asm_context& ctx, std::vector<uint32_t>& out, Instruction*
+    out.push_back(encoding);
+ }
+ 
++/* NR record producer (OpenNR, not upstream): NR_ADDR32_HI is a sentinel RADV uses as the 32-bit address high
++ * word; every operand holding it is encoded as m0, which the PAL prologue sets to the real high word. */
++static uint32_t nr_sentinel()
++{
++   static const uint32_t v = getenv("NR_ADDR32_HI") ? (uint32_t)strtoul(getenv("NR_ADDR32_HI"), NULL, 0) : 0;
++   return v;
++}
++static unsigned nr_m0_subst, nr_m0_writes;
++
+ void
+ emit_instruction(asm_context& ctx, std::vector<uint32_t>& out, Instruction* instr)
+ {
++   if (nr_sentinel()) {
++      for (Operand& op : instr->operands) {
++         if (op.isConstant() && op.bytes() == 4 && op.constantValue() == nr_sentinel()) {
++            op = Operand(m0, s1);
++            nr_m0_subst++;
++         }
++      }
++      for (const Definition& d : instr->definitions)
++         if (d.isFixed() && d.physReg() == m0)
++            nr_m0_writes++;
++   }
+    /* lower remaining pseudo-instructions */
+    if (instr->opcode == aco_opcode::p_constaddr_getpc) {
+       ctx.constaddrs[instr->operands[0].constantValue()].getpc_end = out.size() + 1;
+@@ -1814,6 +1836,12 @@ emit_program(Program* program, std::vector<uint32_t>& code, std::vector<struct a
+ 
+    fix_branches(ctx, code);
+ 
++   if (nr_sentinel()) {
++      fprintf(stderr, "NR_M0 subst=%u writes=%u constdata=%u\n", nr_m0_subst, nr_m0_writes,
++              (unsigned)program->constant_data.size());
++      nr_m0_subst = nr_m0_writes = 0;
++   }
++
+    unsigned exec_size = code.size() * sizeof(uint32_t);
+ 
+    /* Add end-of-code markers for the UMR disassembler. */
+diff --git a/src/amd/vulkan/radv_shader.c b/src/amd/vulkan/radv_shader.c
+index 0eb95e13..4cc3b53b 100644
+--- a/src/amd/vulkan/radv_shader.c
++++ b/src/amd/vulkan/radv_shader.c
+@@ -3243,6 +3243,54 @@ shader_compile(struct radv_device *device, struct nir_shader *const *shaders, in
+    return binary;
+ }
+ 
++
++/* NR record producer (OpenNR, not upstream): with NR_RECORD_OUT=<prefix> a compute shader's ACO
++ * binary is written to <prefix>.code and its config and user SGPR layout to <prefix>.txt. */
++static void
++nr_record_dump(const struct radv_device *device, const struct radv_shader_binary *binary,
++               const struct radv_shader_args *args, const struct radv_shader_info *info)
++{
++   const char *prefix = getenv("NR_RECORD_OUT");
++   if (!prefix || !*prefix || info->stage != MESA_SHADER_COMPUTE || binary->type != RADV_BINARY_TYPE_LEGACY)
++      return;
++   const struct radv_physical_device *pdev = radv_device_physical(device);
++   struct radv_shader_binary_legacy *bin = (struct radv_shader_binary_legacy *)binary;
++   struct radv_shader_binary_layout layout = radv_shader_binary_get_layout(bin);
++   char path[1024];
++   snprintf(path, sizeof(path), "%s.code", prefix);
++   FILE *f = fopen(path, "wb");
++   if (!f)
++      return;
++   fwrite(layout.code, 1, bin->code_size, f);
++   fclose(f);
++   snprintf(path, sizeof(path), "%s.txt", prefix);
++   f = fopen(path, "w");
++   if (!f)
++      return;
++   const struct ac_shader_config *c = &binary->config;
++   fprintf(f, "family %s\ngfx_level %u\nwave_size %u\n", pdev->info.name, (unsigned)pdev->info.gfx_level,
++           (unsigned)info->wave_size);
++   fprintf(f, "rsrc1 0x%08x\nrsrc2 0x%08x\nrsrc3 0x%08x\n", c->rsrc1, c->rsrc2, c->rsrc3);
++   fprintf(f, "num_vgprs %u\nnum_sgprs %u\nlds_size %u\nscratch_bytes_per_wave %u\nspilled_vgprs %u\nspilled_sgprs %u\n",
++           c->num_vgprs, c->num_sgprs, c->lds_size, c->scratch_bytes_per_wave, c->spilled_vgprs, c->spilled_sgprs);
++   fprintf(f, "float_mode %u\nwgp_mode %u\n", c->float_mode, (unsigned)c->wgp_mode);
++   fprintf(f, "code_size %u\nexec_size %u\n", bin->code_size, bin->exec_size);
++   fprintf(f, "block %u %u %u\n", info->cs.block_size[0], info->cs.block_size[1], info->cs.block_size[2]);
++   fprintf(f, "num_user_sgprs %u\n", args->num_user_sgprs);
++   fprintf(f, "inline_push_const_mask 0x%llx\n", (unsigned long long)args->ac.inline_push_const_mask);
++   fprintf(f, "push_constant_size %u\nloads_push_constants %u\n", info->push_constant_size,
++           (unsigned)info->loads_push_constants);
++   for (unsigned i = 0; i < MAX_SETS; i++)
++      if (args->user_sgprs_locs.descriptor_sets[i].sgpr_idx != -1)
++         fprintf(f, "set %u %d %u\n", i, args->user_sgprs_locs.descriptor_sets[i].sgpr_idx,
++                 (unsigned)args->user_sgprs_locs.descriptor_sets[i].num_sgprs);
++   for (unsigned i = 0; i < AC_UD_MAX_UD; i++)
++      if (args->user_sgprs_locs.shader_data[i].sgpr_idx != -1)
++         fprintf(f, "ud %u %d %u\n", i, args->user_sgprs_locs.shader_data[i].sgpr_idx,
++                 (unsigned)args->user_sgprs_locs.shader_data[i].num_sgprs);
++   fclose(f);
++}
++
+ struct radv_shader_binary *
+ radv_shader_nir_to_asm(struct radv_device *device, struct radv_shader_stage *pl_stage,
+                        struct nir_shader *const *shaders, int shader_count,
+@@ -3262,6 +3310,8 @@ radv_shader_nir_to_asm(struct radv_device *device, struct radv_shader_stage *pl_
+    struct radv_shader_binary *binary =
+       shader_compile(device, shaders, shader_count, stage, info, &pl_stage->args, &pl_stage->key, &options);
+ 
++   if (binary)
++      nr_record_dump(device, binary, &pl_stage->args, &binary->info);
+    return binary;
+ }
+ 
+diff --git a/src/amd/vulkan/radv_shader_args.c b/src/amd/vulkan/radv_shader_args.c
+index b65cf086..2be5ecff 100644
+--- a/src/amd/vulkan/radv_shader_args.c
++++ b/src/amd/vulkan/radv_shader_args.c
+@@ -1,3 +1,4 @@
++#include <stdlib.h>
+ /*
+  * Copyright © 2019 Valve Corporation.
+  * Copyright © 2016 Red Hat.
+@@ -567,7 +568,9 @@ declare_shader_args(const struct radv_device *device, const struct radv_graphics
+       return;
+    }
+ 
+-   add_ud_arg(args, 2, AC_ARG_CONST_ADDR, &args->ac.ring_offsets, AC_UD_SCRATCH_RING_OFFSETS);
++   /* NR record producer: a PAL compute shader has no ring table; gfx11+ scratch does not use it. */
++   if (!(getenv("NR_RECORD_OUT") && stage == MESA_SHADER_COMPUTE))
++      add_ud_arg(args, 2, AC_ARG_CONST_ADDR, &args->ac.ring_offsets, AC_UD_SCRATCH_RING_OFFSETS);
+    if (stage == MESA_SHADER_TASK) {
+       add_ud_arg(args, 2, AC_ARG_CONST_ADDR, &args->task_ring_offsets, AC_UD_CS_TASK_RING_OFFSETS);
+    }
+diff --git a/src/amd/vulkan/winsys/null/radv_null_winsys.c b/src/amd/vulkan/winsys/null/radv_null_winsys.c
+index b37c2099..b687e20b 100644
+--- a/src/amd/vulkan/winsys/null/radv_null_winsys.c
++++ b/src/amd/vulkan/winsys/null/radv_null_winsys.c
+@@ -7,6 +7,7 @@
+  *
+  * SPDX-License-Identifier: MIT
+  */
++#include <stdlib.h>
+ #include "radv_null_winsys_public.h"
+ 
+ #include "util/u_string.h"
+@@ -150,6 +151,9 @@ radv_null_winsys_query_info(struct radeon_winsys *rws, struct radeon_info *gpu_i
+    gpu_info->has_image_bvh_intersect_ray = gpu_info->gfx_level >= GFX10_3 || gpu_info->family == CHIP_GFX1013;
+ 
+    gpu_info->address32_hi = gpu_info->gfx_level >= GFX9 ? 0xffff8000u : 0x0;
++   /* NR record producer: a sentinel the producer replaces with m0 (the PAL address32 high word). */
++   if (getenv("NR_ADDR32_HI"))
++      gpu_info->address32_hi = (uint32_t)strtoul(getenv("NR_ADDR32_HI"), NULL, 0);
+ 
+    gpu_info->has_rbplus = gpu_info->family == CHIP_STONEY || gpu_info->gfx_level >= GFX9;
+    gpu_info->rbplus_allowed =

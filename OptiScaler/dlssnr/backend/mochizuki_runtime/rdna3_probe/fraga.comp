@@ -1,0 +1,11 @@
+#version 450
+#extension GL_GOOGLE_include_directive : require
+#include "common.glsl"
+void main() {
+    coopmat<float16_t, gl_ScopeSubgroup, 16, 16, gl_MatrixUseA> m;
+    coopMatLoad(m, in_, 0, 16, gl_CooperativeMatrixLayoutRowMajor);
+    const uint l = gl_SubgroupInvocationID;
+    for (uint i = 0u; i < uint(m.length()); ++i) out_[32u * l + i] = float(m[i]);
+    if (l == 0u) out_[1024] = float(m.length());
+    out_[1025u + l] = float(gl_SubgroupSize);
+}

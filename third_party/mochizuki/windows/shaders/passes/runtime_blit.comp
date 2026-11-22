@@ -1,0 +1,41 @@
+#version 460
+// vkCmdBlitImage as a compute pass, for command buffers that cannot run it: a D3D12 COMPUTE list (Streamline runs DLSS
+// frame generation's evaluate on one, and the Present layers are recorded into it there). A blit is a graphics
+// operation (RADV draws it): recorded into a compute queue's command buffer it is an illegal packet and the queue hangs.
+// One region, offsets[0] < offsets[1] on both images (no flips), one mip, one layer. As RADV's blit does it, so that the
+// two give the same bits (tools/rounds/fgn01/blittest.cpp): the destination texel centre scaled into the source region
+// and normalised, sampled with the filter's sampler (clamped to the edge); into a destination of at most 10 bits a
+// channel (8-bit and 10-bit UNORM) RADV's blit exports 16-bit colour, each value first converted to FP16 toward zero
+// (v_cvt_pkrtz) - `rtz16` asks for that here; wider ones (16-bit, 11/11/10, FP16, FP32) take the value as it is.
+// The store converts into the destination's format (written without a format qualifier).
+layout(local_size_x = 8, local_size_y = 8) in;
+layout(set = 0, binding = 0) uniform sampler2D src;
+layout(set = 0, binding = 1) uniform writeonly image2D dst;
+layout(push_constant) uniform Push {
+    ivec4 s;          // source region x0, y0, x1, y1
+    ivec4 d;          // destination region x0, y0, x1, y1
+    uint linear;      // 1: LINEAR, 0: NEAREST (the sampler bound says the same)
+    uint rtz16;       // 1: through FP16 toward zero first
+} pc;
+// x to FP16 rounding toward zero, back to FP32
+float rtz_half(float x) {
+    float h = unpackHalf2x16(packHalf2x16(vec2(x, 0.0))).x;   // nearest
+    if (abs(h) > abs(x)) {   // rounded away from zero: the next FP16 toward zero
+        uint b = packHalf2x16(vec2(h, 0.0)) & 0xffffu;
+        b -= 1u;   // (|h| > |x| >= 0: the magnitude field is not 0)
+        h = unpackHalf2x16(b).x;
+    }
+    return h;
+}
+void main() {
+    const ivec2 xy = ivec2(gl_GlobalInvocationID.xy);
+    const ivec2 dsz = pc.d.zw - pc.d.xy;
+    if (xy.x >= dsz.x || xy.y >= dsz.y) return;
+    // as RADV's blit: the region's corners normalised, interpolated at the destination texel centre (t0 + i * (t1 - t0))
+    const vec2 size = vec2(textureSize(src, 0));
+    const vec2 t0 = vec2(pc.s.xy) / size, t1 = vec2(pc.s.zw) / size;
+    const vec2 i = (vec2(xy) + 0.5) / vec2(dsz);
+    vec4 v = textureLod(src, fma(i, t1 - t0, t0), 0.0);
+    if (pc.rtz16 != 0u) v = vec4(rtz_half(v.x), rtz_half(v.y), rtz_half(v.z), rtz_half(v.w));
+    imageStore(dst, pc.d.xy + xy, v);
+}

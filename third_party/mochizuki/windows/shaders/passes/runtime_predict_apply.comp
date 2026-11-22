@@ -1,0 +1,23 @@
+#version 460
+// Pass 3 estimated, step 2 of 2: y3 = y2 + r (y2 - y1), r the tiles' gain
+// (runtime_predict_gain.comp) interpolated between tile centres, written over
+// pass 2's answer as the third pass's would be.
+layout(local_size_x = 8, local_size_y = 8) in;
+layout(set = 0, binding = 0, rgba32f) uniform readonly image2D first;   // y1
+layout(set = 0, binding = 1, rgba32f) uniform image2D second;           // y2 (surf0), written in place
+layout(set = 0, binding = 2, r32f) uniform readonly image2D gain;
+layout(push_constant) uniform Push { uint width, height; } pc;
+void main() {
+    const ivec2 xy = ivec2(gl_GlobalInvocationID.xy);
+    if (xy.x >= int(pc.width) || xy.y >= int(pc.height)) return;
+    const ivec2 tiles = ivec2((pc.width + 15u) / 16u, (pc.height + 15u) / 16u);
+    const vec2 t = clamp((vec2(xy) + 0.5) / 16.0 - 0.5, vec2(0.0), vec2(tiles - 1));
+    const ivec2 i = ivec2(t), j = min(i + 1, tiles - 1);
+    const vec2 f = t - vec2(i);
+    const float top = mix(imageLoad(gain, i).r, imageLoad(gain, ivec2(j.x, i.y)).r, f.x);
+    const float bottom = mix(imageLoad(gain, ivec2(i.x, j.y)).r, imageLoad(gain, j).r, f.x);
+    const float r = mix(top, bottom, f.y);
+    const vec4 y2 = imageLoad(second, xy);
+    const vec3 y1 = imageLoad(first, xy).rgb;
+    imageStore(second, xy, vec4(clamp(y2.rgb + r * (y2.rgb - y1), vec3(0.0), vec3(1.0)), y2.a));
+}

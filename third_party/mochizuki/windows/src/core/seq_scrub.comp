@@ -1,0 +1,26 @@
+#version 450
+// MZ_SEQ's scrub and NR_RDNA3_SYNC=zero (nr_runtime.cpp, SeqDiag): a dispatch that fills each workgroup's 64 KB of LDS
+// and ~96 VGPRs a lane with a pattern (zero = 1: with zeros), so the network dispatch after it finds them in that
+// state instead of whatever the dispatch before left. Writes nothing unless the pattern happens to hit one word.
+layout(local_size_x = 256) in;
+layout(std430, binding = 0) buffer Sink { uint sink[]; };
+layout(push_constant) uniform P { uint seed, zero; };
+
+shared uint lds[16384];
+
+void main() {
+    uint x = seed * 2654435761u ^ (gl_WorkGroupID.x * 40503u + gl_LocalInvocationIndex * 977u);
+    for (uint i = gl_LocalInvocationIndex; i < 16384u; i += 256u) {
+        x = x * 1664525u + 1013904223u;
+        lds[i] = zero != 0u ? 0u : x;
+    }
+    uint v[96];
+    for (int i = 0; i < 96; ++i) {
+        x = x * 1664525u + 1013904223u;
+        v[i] = zero != 0u ? 0u : x;
+    }
+    barrier();
+    uint acc = 0u;
+    for (int i = 0; i < 96; ++i) acc ^= v[i] + lds[(gl_LocalInvocationIndex + uint(i) * 131u) & 16383u];
+    if (acc == 0x9E3779B9u) sink[0] = acc;
+}

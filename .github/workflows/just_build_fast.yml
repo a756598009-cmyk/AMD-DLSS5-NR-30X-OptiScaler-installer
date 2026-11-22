@@ -1,0 +1,46 @@
+# Iteration build. Uploads the two files that change and nothing else.
+#
+# The packaging step in Build (No Signing) spends ~35s compressing 200 MB of checked-in third-party
+# DLLs -- libxess, amd_fidelityfx, the Streamline set -- which no commit here touches. Testing a code
+# change needs OptiScaler.dll and the forwarder, dropped over an install that already has the rest.
+#
+# Scratch-repo only. Not for the upstream tree, which wants the whole package.
+name: Build (Fast)
+
+on:
+  workflow_dispatch:
+  # GitHub registers workflow_dispatch from the default branch only, so a dispatch-only workflow that
+  # lives on a topic branch answers 404 forever. A push trigger scoped to the branch both registers it
+  # and fires it, which is the same workaround the signing build carries.
+  push:
+    branches: [ "nr-dual-enlarger", "nr-split-vulkan" ]
+
+env:
+  SOLUTION_FILE_PATH: .
+  BUILD_CONFIGURATION: Release
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        submodules: 'true'
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Build
+      run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}} /verbosity:minimal
+
+    - uses: actions/upload-artifact@v7.0.0
+      with:
+        name: 'fast'
+        path: |
+          ${{ github.workspace }}\x64\Release\a\OptiScaler.dll
+          ${{ github.workspace }}\x64\Release\a\nvngx.dll_dlssnr.dll
+        if-no-files-found: error

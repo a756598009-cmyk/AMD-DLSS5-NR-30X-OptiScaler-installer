@@ -1,0 +1,54 @@
+33 records (navi21) for shaders-rdna2 (tools\build-mochizuki-runtime.cmd at rdna2-mega), 16 kernels left to the driver
+
+refused:
+  name=g_fswindsp32.spv vgpr=192 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+  name=g_fswinimagepreds32.spv vgpr=192 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+  name=g_gemmvnores.spv vgpr=128 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+  name=g_gemmvproj.spv vgpr=128 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+  name=g_gemmvqkv.spv vgpr=128 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+  name=g_repack.spv vgpr=32 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+  name=g_upsview.spv vgpr=48 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+  name=temporal_post_fp32.spv vgpr=192 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+  name=temporal_post_fp32_grade.spv vgpr=192 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+  name=temporal_post_fp32h16.spv vgpr=192 scratch=0 spilled=0 why="a sampled image before another binding (descriptor sizes differ from the driver)"
+  name=temporal_post_fp32h16_grade.spv vgpr=192 scratch=0 spilled=0 why="a sampled image before another binding (descriptor sizes differ from the driver)"
+  name=temporal_post_fp32hp.spv vgpr=192 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+  name=temporal_post_fp32hp_grade.spv vgpr=192 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+  name=temporal_pre_fp32.spv vgpr=192 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+  name=temporal_pre_fp32nh.spv vgpr=192 scratch=0 spilled=0 why="a sampled image before another binding (descriptor sizes differ from the driver)"
+  name=temporal_pre_fp32nhhp.spv vgpr=192 scratch=0 spilled=0 why="not in the runtime layout log (not used by the network)"
+
+records (name vgpr lds user inlines):
+  g_attn.spv vgpr 192 lds 12288 user 16 inlines 12
+  g_decups.spv vgpr 32 lds 0 user 8 inlines 7
+  g_ffwd3.spv vgpr 160 lds 0 user 9 inlines 8
+  g_ffwd3w.spv vgpr 160 lds 0 user 9 inlines 8
+  g_fswin128.spv vgpr 256 lds 32768 user 16 inlines 15
+  g_fswin256.spv vgpr 256 lds 65536 user 16 inlines 15
+  g_fswin32.spv vgpr 192 lds 8192 user 16 inlines 15
+  g_fswin32nh.spv vgpr 192 lds 8192 user 16 inlines 15
+  g_fswin64.spv vgpr 256 lds 16384 user 16 inlines 15
+  g_fswindsp128.spv vgpr 256 lds 32768 user 10 inlines 8
+  g_fswindsp256.spv vgpr 256 lds 65536 user 10 inlines 8
+  g_fswindsp32nh.spv vgpr 192 lds 8192 user 10 inlines 8
+  g_fswindsp64.spv vgpr 256 lds 16384 user 10 inlines 8
+  g_fswinfusedup128.spv vgpr 256 lds 32768 user 10 inlines 8
+  g_fswinfusedup256.spv vgpr 256 lds 65536 user 10 inlines 8
+  g_fswinfusedup32.spv vgpr 192 lds 8192 user 10 inlines 8
+  g_fswinfusedup32nh.spv vgpr 192 lds 8192 user 10 inlines 8
+  g_fswinfusedup64.spv vgpr 256 lds 16384 user 10 inlines 8
+  g_fswinimagepost32.spv vgpr 192 lds 8192 user 13 inlines 8
+  g_fswinimagepost32_grade.spv vgpr 192 lds 8192 user 13 inlines 8
+  g_fswinimagepreds32nh.spv vgpr 192 lds 8192 user 13 inlines 8
+  g_gemmnores.spv vgpr 128 lds 0 user 10 inlines 9
+  g_gemmpool.spv vgpr 128 lds 0 user 12 inlines 11
+  g_gemmproj.spv vgpr 80 lds 0 user 14 inlines 10
+  g_gemmprojc.spv vgpr 64 lds 0 user 14 inlines 10
+  g_gemmprojt.spv vgpr 80 lds 0 user 16 inlines 12
+  g_gemmprojw.spv vgpr 128 lds 0 user 14 inlines 10
+  g_gemmvact.spv vgpr 128 lds 0 user 12 inlines 8
+  g_gemmvqkvnorm.spv vgpr 128 lds 0 user 13 inlines 9
+  g_gemmvqkvnorms.spv vgpr 128 lds 0 user 13 inlines 9
+  g_gemmvqkvs.spv vgpr 80 lds 0 user 7 inlines 6
+  g_noisefield.spv vgpr 32 lds 0 user 6 inlines 5
+  g_vitattn.spv vgpr 96 lds 0 user 6 inlines 5

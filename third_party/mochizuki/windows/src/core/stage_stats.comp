@@ -1,0 +1,59 @@
+#version 450
+// MZ_STAGE_DUMP (nr_runtime.cpp, StageDump): statistics of one activation value as the frame leaves it, for
+// comparing one network against another stage by stage. Binding 0 is the value's own range of the arena (or of its
+// FP16 twin), bound with its offset. Each workgroup takes one of `chunks` contiguous slices of the elements and writes
+// 8 words: sum, sum of |x|, sum of x^2, max |x| (floats), NaN/Inf count, zero count, and an order-free hash of
+// (index, value bits) with -0 taken as +0, so an e4m3 byte and its FP16 twin hash alike.
+layout(local_size_x = 256) in;
+layout(std430, binding = 0) readonly buffer Src { uint w[]; };
+layout(std430, binding = 1) buffer Dst { uint o[]; };
+layout(push_constant) uniform P { uint bytes, mode, out_at, chunks; };   // mode 0 e4m3, 1 f16, 2 f32
+
+shared float r0[256], r1[256], r2[256], r3[256];
+shared uint r4[256], r5[256], r6[256];
+
+float e4m3(uint b) {
+    const uint e = (b >> 3) & 15u, m = b & 7u;
+    if (e == 15u && m == 7u) return uintBitsToFloat(0x7fc00000u);
+    const float v = e == 0u ? float(m) * exp2(-9.0) : (1.0 + float(m) / 8.0) * exp2(float(e) - 7.0);
+    return (b & 128u) != 0u ? -v : v;
+}
+
+uint mix32(uint x) {
+    x ^= x >> 16; x *= 0x7feb352du; x ^= x >> 15; x *= 0x846ca68bu; x ^= x >> 16;
+    return x;
+}
+
+void main() {
+    const uint t = gl_LocalInvocationID.x, c = gl_WorkGroupID.x;
+    const uint n = mode == 0u ? bytes : mode == 1u ? bytes / 2u : bytes / 4u;
+    const uint q = n / chunks, r = n % chunks;
+    const uint lo = c * q + min(c, r), hi = lo + q + (c < r ? 1u : 0u);
+    float s0 = 0.0, s1 = 0.0, s2 = 0.0, mx = 0.0;
+    uint bad = 0u, zero = 0u, h = 0u;
+    for (uint i = lo + t; i < hi; i += 256u) {
+        float x;
+        if (mode == 0u) x = e4m3((w[i >> 2] >> (8u * (i & 3u))) & 255u);
+        else if (mode == 1u) x = unpackHalf2x16(w[i >> 1] >> (16u * (i & 1u))).x;
+        else x = uintBitsToFloat(w[i]);
+        const uint bits = x == 0.0 ? 0u : floatBitsToUint(x);
+        h += mix32(bits ^ mix32(i + 0x9e3779b9u));
+        if (isnan(x) || isinf(x)) { ++bad; continue; }
+        if (x == 0.0) ++zero;
+        s0 += x; s1 += abs(x); s2 += x * x; mx = max(mx, abs(x));
+    }
+    r0[t] = s0; r1[t] = s1; r2[t] = s2; r3[t] = mx; r4[t] = bad; r5[t] = zero; r6[t] = h;
+    barrier();
+    for (uint k = 128u; k > 0u; k >>= 1) {
+        if (t < k) {
+            r0[t] += r0[t + k]; r1[t] += r1[t + k]; r2[t] += r2[t + k]; r3[t] = max(r3[t], r3[t + k]);
+            r4[t] += r4[t + k]; r5[t] += r5[t + k]; r6[t] += r6[t + k];
+        }
+        barrier();
+    }
+    if (t == 0u) {
+        const uint b = out_at + 8u * c;
+        o[b] = floatBitsToUint(r0[0]); o[b + 1u] = floatBitsToUint(r1[0]); o[b + 2u] = floatBitsToUint(r2[0]);
+        o[b + 3u] = floatBitsToUint(r3[0]); o[b + 4u] = r4[0]; o[b + 5u] = r5[0]; o[b + 6u] = r6[0]; o[b + 7u] = hi - lo;
+    }
+}

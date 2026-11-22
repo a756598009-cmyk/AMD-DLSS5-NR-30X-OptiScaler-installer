@@ -1,0 +1,23 @@
+#version 450
+#extension GL_GOOGLE_include_directive : require
+// Tile t: A at in_[512 t], B at in_[512 t + 256]. out_[512 t]: A B; out_[512 t + 256]: the same with every k pair
+// of both operands swapped in the upper lane half.
+#include "common.glsl"
+void main() {
+    const uint t = gl_WorkGroupID.x;
+    coopmat<float16_t, gl_ScopeSubgroup, 16, 16, gl_MatrixUseA> a;
+    coopmat<float16_t, gl_ScopeSubgroup, 16, 16, gl_MatrixUseB> b;
+    coopMatLoad(a, in_, 512u * t, 16, gl_CooperativeMatrixLayoutRowMajor);
+    coopMatLoad(b, in_, 512u * t + 256u, 16, gl_CooperativeMatrixLayoutRowMajor);
+    const coopmat<float, gl_ScopeSubgroup, 16, 16, gl_MatrixUseAccumulator> zero =
+        coopmat<float, gl_ScopeSubgroup, 16, 16, gl_MatrixUseAccumulator>(0.0);
+    coopmat<float, gl_ScopeSubgroup, 16, 16, gl_MatrixUseAccumulator> c = coopMatMulAdd(a, b, zero);
+    coopMatStore(c, out_, 512u * t, 16, gl_CooperativeMatrixLayoutRowMajor);
+    if (gl_SubgroupInvocationID >= 16u)
+        for (uint k = 0u; k + 1u < uint(a.length()); k += 2u) {
+            float16_t x = a[k]; a[k] = a[k + 1u]; a[k + 1u] = x;
+            x = b[k]; b[k] = b[k + 1u]; b[k + 1u] = x;
+        }
+    c = coopMatMulAdd(a, b, zero);
+    coopMatStore(c, out_, 512u * t + 256u, 16, gl_CooperativeMatrixLayoutRowMajor);
+}

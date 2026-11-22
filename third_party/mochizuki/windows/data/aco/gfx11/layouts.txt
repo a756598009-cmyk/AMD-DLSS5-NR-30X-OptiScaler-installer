@@ -1,0 +1,41 @@
+layout g_attn.spv push 48 bindings 0:7 1:7 2:7 3:7 4:7 16:7 18:7
+layout g_decups.spv push 28 bindings 0:7 1:7 2:7
+layout g_ffwd3.spv push 32 bindings 0:7 1:7 2:7 3:7 4:7 5:7 16:7 19:7
+layout g_ffwd3w.spv push 32 bindings 0:7 1:7 2:7 3:7 4:7 5:7 16:7 19:7
+layout g_fswin128.spv push 80 bindings 0:7 1:7 2:7 3:7 4:7 5:7
+layout g_fswin256.spv push 80 bindings 0:7 1:7 2:7 3:7 4:7 5:7
+layout g_fswin32.spv push 84 bindings 0:7 1:7 2:7 3:7 4:7 5:7 16:7 20:7
+layout g_fswin32nh.spv push 84 bindings 0:7 1:7 2:7 3:7 4:7 5:7 16:7 20:7
+layout g_fswin64.spv push 80 bindings 0:7 1:7 2:7 3:7 4:7 5:7
+layout g_fswindsp128.spv push 124 bindings 0:7 1:7 2:7 3:7 4:7 5:7
+layout g_fswindsp256.spv push 124 bindings 0:7 1:7 2:7 3:7 4:7 5:7
+layout g_fswindsp32nh.spv push 128 bindings 0:7 1:7 2:7 3:7 4:7 5:7 16:7 20:7
+layout g_fswindsp64.spv push 124 bindings 0:7 1:7 2:7 3:7 4:7 5:7
+layout g_fswinfusedup128.spv push 124 bindings 0:7 1:7 2:7 3:7 4:7
+layout g_fswinfusedup256.spv push 124 bindings 0:7 1:7 2:7 3:7 4:7
+layout g_fswinfusedup32.spv push 128 bindings 0:7 1:7 2:7 3:7 4:7 16:7 20:7
+layout g_fswinfusedup32nh.spv push 128 bindings 0:7 1:7 2:7 3:7 4:7 16:7 20:7
+layout g_fswinfusedup64.spv push 124 bindings 0:7 1:7 2:7 3:7 4:7
+layout g_fswinimagepost32_grade.spv push 128 bindings 0:7 1:7 2:7 3:7 4:7 5:3 6:3 7:1
+layout g_fswinimagepost32.spv push 128 bindings 0:7 1:7 2:7 3:7 4:7 5:3 6:3 7:1
+layout g_fswinimagepreds32nh.spv push 128 bindings 0:7 1:7 2:7 3:7 4:7 5:7 6:1
+layout g_gemmnores.spv push 92 bindings 0:7 1:7 2:7 3:7 4:7 5:7 6:7 7:7
+layout g_gemmpool.spv push 92 bindings 0:7 1:7 2:7 3:7 4:7 5:7 6:7 7:7
+layout g_gemmproj.spv push 96 bindings 0:7 1:7 2:7 3:7 4:7 5:7 6:7 7:7 16:7 19:7
+layout g_gemmprojc.spv push 96 bindings 0:7 1:7 2:7 3:7 4:7 5:7 6:7 7:7 16:7 19:7
+layout g_gemmprojt.spv push 96 bindings 0:7 1:7 2:7 3:7 4:7 5:7 6:7 7:7 16:7 19:7
+layout g_gemmprojw.spv push 96 bindings 0:7 1:7 2:7 3:7 4:7 5:7 6:7 7:7 16:7 19:7
+layout g_gemmvact.spv push 96 bindings 0:7 1:7 2:7 3:7 4:7 5:7 6:7 7:7 16:7 19:7
+layout g_gemmvqkvnorm.spv push 96 bindings 0:7 1:7 2:7 3:7 4:7 5:7 6:7 7:7 16:7 19:7
+layout g_gemmvqkvnorms.spv push 96 bindings 0:7 1:7 2:7 3:7 4:7 5:7 6:7 7:7 16:7 19:7
+layout g_gemmvqkvs.spv push 92 bindings 0:7 1:7 2:7 3:7 4:7 5:7 6:7 7:7
+layout g_noisefield.spv push 20 bindings 0:7
+layout g_vitattn.spv push 32 bindings 0:7 1:7 2:7 16:7 17:7
+layout motion_estimate.spv push 32 bindings 0:3 1:3 2:3 3:3
+layout motion_luma.spv push 20 bindings 0:1 1:3 2:3
+layout runtime_alpha.spv push 12 bindings 0:3 1:1
+layout runtime_depth.spv push 24 bindings 0:1 1:3
+layout runtime_transfer.spv push 48 bindings 0:3 1:1 2:1 3:3 4:3 5:3
+layout temporal_post_fp32_grade.spv push 128 bindings 0:7 1:7 2:7 3:7 4:7 5:7 6:3 7:3 8:1 9:1 10:1
+layout temporal_post_fp32.spv push 128 bindings 0:7 1:7 2:7 3:7 4:7 5:7 6:3 7:3 8:1 9:1 10:1
+layout temporal_pre_fp32nh.spv push 128 bindings 0:7 1:7 2:7 3:7 4:7 5:7 6:7 7:1 8:1 9:1 10:1

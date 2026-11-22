@@ -1,0 +1,25 @@
+#version 450
+#extension GL_GOOGLE_include_directive : require
+// Which lane half each output row is computed from. A and B come from memory, so lanes l and l^16 hold the same
+// values; one half of one operand is then overwritten with 1000 + component and the product with an identity
+// matrix is stored. Workgroup 0: B, upper half marked; 1: B, lower; 2: A, upper; 3: A, lower.
+// in_[0, 256): identity, in_[256, 512): 16 i + j + 1.
+#include "common.glsl"
+void main() {
+    coopmat<float16_t, gl_ScopeSubgroup, 16, 16, gl_MatrixUseA> a;
+    coopmat<float16_t, gl_ScopeSubgroup, 16, 16, gl_MatrixUseB> b;
+    const uint mode = gl_WorkGroupID.x;
+    const bool upper = gl_SubgroupInvocationID >= 16u;
+    const bool mark = (mode & 1u) == 0u ? upper : !upper;
+    coopMatLoad(a, in_, mode < 2u ? 0u : 256u, 16, gl_CooperativeMatrixLayoutRowMajor);
+    coopMatLoad(b, in_, mode < 2u ? 256u : 0u, 16, gl_CooperativeMatrixLayoutRowMajor);
+    for (uint k = 0u; k < uint(a.length()); ++k)
+        if (mark) {
+            if (mode < 2u) b[k] = float16_t(1000.0 + float(k));
+            else a[k] = float16_t(1000.0 + float(k));
+        }
+    coopmat<float, gl_ScopeSubgroup, 16, 16, gl_MatrixUseAccumulator> c =
+        coopmat<float, gl_ScopeSubgroup, 16, 16, gl_MatrixUseAccumulator>(0.0);
+    c = coopMatMulAdd(a, b, c);
+    coopMatStore(c, out_, mode * 256u, 16, gl_CooperativeMatrixLayoutRowMajor);
+}
