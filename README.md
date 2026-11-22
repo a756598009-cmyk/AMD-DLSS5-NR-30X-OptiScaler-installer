@@ -465,6 +465,7 @@ Game ───────────┤
 - [TheAutomatic/dlss-5-amd-project](https://github.com/TheAutomatic/dlss-5-amd-project) —— 社区持续维护版本及 AMD DLSS5 相关方案
 - 政宗SAMA 社区项目
 - [neural-amd-opti](https://github.com/MatheusFerreiraS/neural-amd-opti) —— OptiScaler持续维护版本及 AMD DLSS5 相关方案
+- [ANR](https://github.com/apex-compute/ANR)负责6X帧生成
 
 特别感谢上述项目作者及社区贡献者。
 
